@@ -229,6 +229,7 @@ else {
 										<option value="" disabled>--------UDP--------</option>
 										<option value="UDP">UDP</option>
 										<option value="UDPRAW">UDPRAW</option>
+										<option value="UDPPPS">UDP-PPS</option>
 										<option value="UNKNOWN">Unknown</option>
 										<option value="XTDCUSTOM">XTDCustom</option>
 										<option value="CNC">CNC</option>

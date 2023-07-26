@@ -47,6 +47,12 @@
               } else {
                 echo "<br><div class='alert alert-danger'>Please fill out all fields.</div>";
               }
+            } else if($_POST["seltask"] == "HTTPS") {
+                if(isset($_POST["path"]) && !empty($_POST["path"]) && isset($_POST["method"]) && !empty($_POST["method"])) {
+                  $command = $_POST["ip"]."|".$_POST["port"]."|".$_POST["time"]."|".$_POST["path"]."|".$_POST["method"]."|".$_POST["power"];   # Command that was entered
+                } else {
+                  echo "<br><div class='alert alert-danger'>Please fill out all fields.</div>";
+                }
             } else if($_POST["seltask"] == "OVHL7") {
               if(isset($_POST["power"]) && !empty($_POST["power"])) {
                 $command = $_POST["ip"]."|".$_POST["port"]."|".$_POST["time"]."|".$_POST["power"];   # Command that was entered
@@ -116,9 +122,14 @@
               # Displays success message - "Successfully tasked command. Redirecting back to command.php in 3 seconds. Do not refresh the page."
               echo "<br><div class='alert alert-success'>Successfully tasked command. Redirecting back to command.php in 3 seconds. Do not refresh the page.</div>";
 
-              # Waits 3 seconds, then redirects to commandSubmit.php
+              # Waits 3 seconds, then redirects to tasks.php
               # This is a hack to clear out the POST data
               header('Refresh: 3; URL=./tasks.php');
+              echo '<script>
+                setTimeout(function() {
+                    window.location.href = "./tasks.php";
+                }, 3000);
+              </script>';
             }
           }
           else
