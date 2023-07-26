@@ -42,6 +42,9 @@
 # include <sys/ioctl.h>
 # include <net/if.h>
 # include <sys/prctl.h>
+# include <openssl/ssl.h>
+# include <openssl/err.h>
+# include <openssl/bio.h>
 
 # define STD2_SIZE 1024
 # define PHI 0x9e3779b9

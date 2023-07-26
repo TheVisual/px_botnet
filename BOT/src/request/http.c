@@ -81,3 +81,56 @@ Host: %s\r\n\
 char* http_header_strip(char* content){
   return strstr(content, "\r\n\r\n")+4;
 }
+
+char* https_request(const char* hostname, const char* page) {
+    SSL_load_error_strings();
+    OpenSSL_add_ssl_algorithms();
+
+    const SSL_METHOD* method = TLS_client_method();
+    SSL_CTX* ctx = SSL_CTX_new(method);
+
+    SSL* ssl = SSL_new(ctx);
+
+    BIO* bio_conn = BIO_new_ssl_connect(ctx);
+    BIO* bio_mem = BIO_new(BIO_s_mem());
+
+    SSL* ssl_conn;
+    BIO_get_ssl(bio_conn, &ssl_conn);
+    SSL_set_mode(ssl_conn, SSL_MODE_AUTO_RETRY);
+
+    char hostname_with_port[BUFSIZ];
+    snprintf(hostname_with_port, BUFSIZ, "%s:%d", hostname, PORT);
+    BIO_set_conn_hostname(bio_conn, hostname_with_port);
+
+    if (BIO_do_connect(bio_conn) <= 0) {
+        // Handle failed connection
+        fprintf(stderr, "Failed to establish connection.\n");
+        ERR_print_errors_fp(stderr);
+        return NULL;
+    } else {
+        printf("Connected to %s\n", hostname_with_port);
+    }
+
+    char request[BUFSIZ];
+    snprintf(request, BUFSIZ, "GET %s HTTP/1.1\r\nHost: %s\r\nConnection: close\r\n\r\n", page, hostname);
+    printf("Request: %s\n", request);
+
+    BIO_write(bio_conn, request, strlen(request));
+
+    char* response = malloc(BUFSIZ);
+    response[0] = '\0';
+
+    char buf[BUFSIZ];
+    int len;
+
+    while ((len = BIO_read(bio_conn, buf, BUFSIZ - 1)) > 0) {
+        buf[len] = '\0';  // Null-terminate the received data
+        response = realloc(response, strlen(response) + len + 1);
+        strcat(response, buf);
+    }
+
+    BIO_free_all(bio_conn);
+    SSL_CTX_free(ctx);
+    printf("Response: %s\n", response);
+    return response;
+}
