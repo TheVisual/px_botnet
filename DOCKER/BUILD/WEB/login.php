@@ -11,49 +11,55 @@
   $dbConnection = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 ?>
 <?php
-      # If the user clicked "Login"
-      if (isset($_POST["submit"]))
+  # If the user clicked "Login"
+  if (isset($_POST["submit"]))
+  {
+    $username = $_POST["username"]; # Username
+    $password = $_POST["password"]; # Password
+    
+    # If all of the necessary fields are set
+    if (isset($username) && !empty($username) && isset($password) && !empty($password))
+    {
+      # Determines if the username/password entered match a valid set of credentials
+      
+      $statement = $dbConnection->prepare("SELECT * FROM users WHERE username = :username");
+      $statement->bindParam(":username", $username);
+      $statement->execute();
+
+      $result = $statement->fetch(PDO::FETCH_ASSOC);
+      
+      # Kills database connection
+      $dbConnection = null;
+      
+      # If user found and password matches
+      if ($result && password_verify($password, $result["password"]))
       {
-        $username = $_POST["username"]; # Username
-        $password = $_POST["password"]; # Password
-        
-        # If all of the necessary fields are set
-        if (isset($username) && !empty($username) && isset($password) && !empty($password))
-        {
-          # Determines if the username/password entered match a valid set of credentials
-          
-          $statement = $dbConnection->prepare("SELECT * FROM users");
-          $statement->execute();
+        # Successful authentication occurred
+        # We now start a session
+        $_SESSION["authenticated"] = 1;
 
-          $results = $statement->fetchAll();
-          $ok = 0;
-          foreach ($results as $row)
-          {
-            if (password_verify($password, $row["password"])){
-              $ok = 1;
-            }
-          
-          }
+        # Sets $_SESSION["username"] to the current logged in user
+        $_SESSION["username"] = $username;
 
-          # Kills database connection
-          $statement->connection = null;
-          # rowCount will be 1 if successful authentication
-          if ($ok == 1)
-          {
-            # Successful authentication occurred
-            # We now start a session
-            $_SESSION["authenticated"] = 1;
-
-            # Sets $_SESSION["username"] to the current logged in user
-            # http://stackoverflow.com/questions/8703507/how-can-i-get-a-session-id-or-username-in-php
-            $_SESSION["username"] = $username;
-
-            # Redirects to index.php due to successful authentication
-            header("Location: index.php");
-          }
-        }
+        # Redirects to index.php due to successful authentication
+        header("Location: index.php");
+        exit();
       }
-    ?>
+      # Else failed authentication
+      else
+      {
+        # Displays error message - "Invalid username or password"
+        echo "<br><div class='alert alert-danger'>Invalid username or password.</div>";
+      }
+    }
+    # Not all fields were set
+    else
+    {
+      # Displays error message - "Please fill out all fields."
+      echo "<br><div class='alert alert-danger'>Please fill out all fields.</div>";
+    }
+  }
+?>
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
   <head>

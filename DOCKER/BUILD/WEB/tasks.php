@@ -224,14 +224,15 @@ else {
 								<div class="col-4">
 									<select class="form-select mb-1" name="seltask" onchange="showDiv(this)">
 										<option value="" disabled selected>Choose option</option>
-										<option value="" disabled>--------TCP--------</option>
+										<option value="" disabled>--------L.3--------</option>
+										<option value="BLACKNURSE">BLACKNURSE</option>
+										<option value="" disabled>--------L.4--------</option>
 										<option value="TCP">TCP</option>
-										<option value="" disabled>--------UDP--------</option>
 										<option value="UDP">UDP</option>
 										<option value="UDPRAW">UDPRAW</option>
+										<option value="UDPPPS">UDPPPS</option>
 										<option value="UNKNOWN">Unknown</option>
 										<option value="XTDCUSTOM">XTDCustom</option>
-										<option value="CNC">CNC</option>
 										<option value="HOLD">hold</option>
 										<option value="JUNK">junk</option>
 										<option value="RANDHEX">RandHex</option>
@@ -239,7 +240,10 @@ else {
 										<option value="" disabled>--------L.7--------</option>
 										<option value="PPS">PPS</option>
 										<option value="HTTP">HTTP</option>
+										<option value="HTTPS">HTTPS</option>
 										<option value="OVHL7">OVHL7</option>
+										<option value="" disabled>--------MANAGEMENT--------</option>
+										<option value="KILL">KILL</option>
 									</select>
 								</div>
 
@@ -266,7 +270,6 @@ else {
 
 													# Populates each <option> drop-down with our hosts that have beaconed previously
 													foreach ($hosts as $row) {
-
 														if ($row["status"] == "connected") {
 															echo "<option value=" . "\"" . $row["hostname"] . "\"" . ">" . "🟢 - " . $row["hostname"] . "" . "</option>";
 														} else {
@@ -277,10 +280,13 @@ else {
 												</select>
 											</div>
 											<div class="col-6">
-												<input type="text" class="form-control mb-1" name="ip" placeholder="ip or FQDN (without http(s):// or slash)">
-												<input type="text" class="form-control mb-1" name="port" placeholder="port">
+												<div id="stdfrm" display="none">
+													<input type="text" class="form-control mb-1" name="ip" id="ip" placeholder="ip or FQDN (without http(s):// or slash)">
+													<input type="text" class="form-control mb-1" name="port" id="port" placeholder="port">
+													<input type="text" class="form-control mb-1" name="time" id="time" placeholder="time (seconds)">
+												</div>
 												<!-- HTTPFRM -->
-												<div id="httpfrm" hidden">
+												<div id="httpfrm" display="none">
 													<input type="text" class="form-control mb-1" name="path" placeholder="path">
 													<select class="form-select mb-1" name="method">
 														<option value="" disabled selected>Choose option</option>
@@ -291,14 +297,19 @@ else {
 													</select>
 												</div>
 												<!-- END HTTPFRM -->
+												<!-- KILLFRM -->
+												<div id="killfrm" display="none">
+													<input type="text" class="form-control mb-1" name="killpassword">
+												</div>
+												<!-- END KILLFRM -->
 												<!-- POWERFRM -->
-												<div id="powerfrm" hidden">
-													Power : <label for="time" id="powerlabel" class="form-label">10</label>
+												<div id="powerfrm" display="none">
+													Power : <label for="power" id="powerlabel" class="form-label">10</label>
 													<input type="range" name="power" value="10" class="form-range" min="10" max="100" step="1" id="power" oninput="document.getElementById('powerlabel').innerHTML = document.getElementById('power').value">
 												</div>
 												<!-- END POWERFRM -->
 												<!-- TCPFRM -->
-												<div id="tcpfrm" hidden">
+												<div id="tcpfrm" display="none">
 													Methods : <input class="form-check-input" type="checkbox" value="syn" name="checkboxes[]">
 													<label class="form-check-label" for="flexCheckDefault">
 														syn
@@ -322,18 +333,27 @@ else {
 												</div>
 												<!-- END TCPFRM -->
 												<!-- UDPFRM -->
-												<div id="udpfrm" hidden">
+												<div id="udpfrm" display="none">
 													<input class="form-check-input" type="checkbox" value="spoofit" name="spoofit">
 													<label class="form-check-label" for="flexCheckDefault">
 														Spoofit
 													</label><br>
-													PacketSize : <label for="time" id="packetsizelabel" class="form-label">1</label>
+													PacketSize : <label for="packetsize" id="packetsizelabel" class="form-label">1</label>
 													<input type="range" name="packetsize" value="1" class="form-range" min="1" max="1023" step="1" id="packetsize" oninput="document.getElementById('packetsizelabel').innerHTML = document.getElementById('packetsize').value">
 												</div>
 												<!-- END UDPFRM -->
-												Time : <label for="time" id="timespan" class="form-label">10</label>
-												<input type="range" name="time" value="10" class="form-range" min="10" max="300" step="1" id="time" oninput="document.getElementById('timespan').innerHTML = document.getElementById('time').value">
-											</div>
+												
+												<!-- udpppsfrm -->
+												<div id="udpppsfrm" display="none">
+													<!--
+													Threads : <label for="threads" id="threadlabel" class="form-label">10</label>
+													<input type="range" name="threads" value="10" class="form-range" min="10" max="300" step="1" id="threads" oninput="document.getElementById('threadlabel').innerHTML = document.getElementById('threads').value">
+													-->
+													PacketSize : <label for="ppspacketsize" id="ppspacketsizelabel" class="form-label">2</label>
+													<input type="range" name="ppspacketsize" value="2" class="form-range" min="2" max="100" step="1" id="ppspacketsize" oninput="document.getElementById('ppspacketsizelabel').innerHTML = document.getElementById('ppspacketsize').value">
+												</div>
+												<!-- END udpppsfrm -->
+												
 										</div>
 										<button type="submit" name="submit" class="btn btn-default">Submit</button>
 									</form>
@@ -350,34 +370,98 @@ else {
 					<script src="assets/js/theme.js"></script>
 					<script type="text/javascript">
 						function showDiv(select) {
-							if (select.value != "") {
-								document.getElementById('frm').style.display = "block";
+							const displaySettings = {
+								'HTTP': {
+									'stdfrm': 'block',
+									'httpfrm': 'block',
+									'powerfrm': 'block',
+									'udpppsfrm': 'none',
+									'killfrm': 'none',
+									'udpfrm': 'none',
+									'tcpfrm': 'none'
+								},
+								'HTTPS': {
+									'stdfrm': 'block',
+									'httpfrm': 'block',
+									'powerfrm': 'block',
+									'udpppsfrm': 'none',
+									'killfrm': 'none',
+									'udpfrm': 'none',
+									'tcpfrm': 'none'
+								},
+								'BLACKNURSE': {
+									'stdfrm': 'block',
+									'httpfrm': 'none',
+									'powerfrm': 'none',
+									'udpppsfrm': 'none',
+									'killfrm': 'none',
+									'udpfrm': 'none',
+									'tcpfrm': 'none',
+								},
+								'PPS': {
+									'stdfrm': 'block',
+									'httpfrm': 'none',
+									'powerfrm': 'block',
+									'udpppsfrm': 'none',
+									'killfrm': 'none',
+									'udpfrm': 'none',
+									'tcpfrm': 'none'
+								},
+								'UDPPPS': {
+									'stdfrm': 'block',
+									'httpfrm': 'none',
+									'powerfrm': 'none',
+									'udpppsfrm': 'block',
+									'killfrm': 'none',
+									'udpfrm': 'none',
+									'tcpfrm': 'none'
+								},
+								'UDP': {
+									'stdfrm': 'block',
+									'httpfrm': 'none',
+									'powerfrm': 'none',
+									'udpppsfrm': 'none',
+									'killfrm': 'none',
+									'udpfrm': 'block',
+									'tcpfrm': 'none'
+								},
+								'KILL': {
+									'stdfrm': 'none',
+									'httpfrm': 'none',
+									'powerfrm': 'none',
+									'udpppsfrm': 'none',
+									'killfrm': 'block',
+									'udpfrm': 'none',
+									'tcpfrm': 'none'
+								},
+								'TCP': {
+									'stdfrm': 'block',
+									'httpfrm': 'none',
+									'powerfrm': 'none',
+									'udpppsfrm': 'none',
+									'killfrm': 'none',
+									'udpfrm': 'block',
+									'tcpfrm': 'block'
+								},
+								'': {
+									'stdfrm': 'block',
+									'httpfrm': 'none',
+									'powerfrm': 'none',
+									'udpppsfrm': 'none',
+									'killfrm': 'none',
+									'udpfrm': 'none',
+									'tcpfrm': 'none'
+								}
+							};
+
+							if (select.value !== '') {
+								document.getElementById('frm').style.display = 'block';
 								document.getElementById('seltask').value = select.value;
-								if (select.value == "HTTP") {
-									document.getElementById('httpfrm').style.display = "block";
-									document.getElementById('powerfrm').style.display = "block";
-									document.getElementById('udpfrm').style.display = "none";
-									document.getElementById('tcpfrm').style.display = "none";
-								} else if (select.value == "PPS" || select.value == "OVHL7") {
-									document.getElementById('httpfrm').style.display = "none";
-									document.getElementById('powerfrm').style.display = "block";
-									document.getElementById('udpfrm').style.display = "none";
-									document.getElementById('tcpfrm').style.display = "none";
-								} else if (select.value == "UDP") {
-									document.getElementById('httpfrm').style.display = "none";
-									document.getElementById('powerfrm').style.display = "none";
-									document.getElementById('udpfrm').style.display = "block";
-									document.getElementById('tcpfrm').style.display = "none";
-								} else if (select.value == "TCP") {
-									document.getElementById('httpfrm').style.display = "none";
-									document.getElementById('powerfrm').style.display = "none";
-									document.getElementById('udpfrm').style.display = "block";
-									document.getElementById('tcpfrm').style.display = "block";
-								} else {
-									document.getElementById('httpfrm').style.display = "none";
-									document.getElementById('powerfrm').style.display = "none";
-									document.getElementById('udpfrm').style.display = "none";
-									document.getElementById('tcpfrm').style.display = "none";
+
+								const settings = displaySettings[select.value] || displaySettings[''];
+
+								for (const key in settings) {
+									document.getElementById(key).style.display = settings[key];
 								}
 							}
 						}
