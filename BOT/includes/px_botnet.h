@@ -6,9 +6,13 @@
 
 
    --------------------------------------- */
-#ifndef PX_SSH_H
+# ifndef PX_SSH_H
 # define PX_SSH_H
 
+# include <openssl/ssl.h>
+# include <openssl/err.h>
+# include <openssl/bio.h>
+# include <sys/resource.h>
 # include <stdlib.h>
 # include <stdio.h> 
 # include <string.h>
@@ -42,9 +46,6 @@
 # include <sys/ioctl.h>
 # include <net/if.h>
 # include <sys/prctl.h>
-# include <openssl/ssl.h>
-# include <openssl/err.h>
-# include <openssl/bio.h>
 
 # define STD2_SIZE 1024
 # define PHI 0x9e3779b9

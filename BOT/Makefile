@@ -24,7 +24,7 @@ OBJS				= $(SRCS:.c=.o)
 OBJECTS_PREFIXED	= $(addprefix $(OBJS_DIR), $(OBJS))
 CC					= $(cross)gcc
 AR					= $(cross)ar
-CC_FLAGS			= -O3 -ffast-math -O2 -lpthread -static
+CC_FLAGS			= -O3 -ffast-math -O2 -lpthread -static -lssl -lcrypto -D_GNU_SOURCE
 
 $(OBJS_DIR)%.o : %.c $(PROJECT_H)
 	@mkdir -p $(OBJS_DIR)

