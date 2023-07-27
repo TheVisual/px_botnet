@@ -1,29 +1,29 @@
 all: 
-	@docker-compose up -d
+	@docker compose up -d
 
 down:
-	@docker-compose down
+	@docker compose down
 
 stop:
-	@docker-compose stop
+	@docker compose stop
 
 kill:
-	@docker-compose kill
+	@docker compose kill
 
 re:
-	@docker-compose up -d --build
+	@docker compose up -d --build
 
 top:
-	@docker-compose top
+	@docker compose top
 
 bash:
-	@docker-compose exec px_server bash
+	@docker compose exec px_server bash
 
 ps:
-	@docker-compose ps
+	@docker compose ps
 
 logs:
-	@docker-compose logs
+	@docker compose logs
 
 clean:
 	@docker stop $$(docker ps -qa); \
