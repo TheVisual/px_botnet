@@ -34,16 +34,26 @@ char	*ft_request(char *page)
 	char		**a;
 	char		**b;
 	char		*tmp;
-	int			i = 0;
+	int			i;
 
 	convert = init_randomizer(stringifer, 4);
 	content = NULL;
 	if (!convert)
 		return (NULL);
+	const char	*ip = host_to_ip(convert);
+	if (!ip)
+	{
+		free(convert);
+		return (NULL);
+	}
 
-	printf("URL: %s%s\n", convert, page);
-	content = https_request(convert, page);
-	printf("content: %s\n", content);
+	SOCKET		sock;
+	SOCKADDR_IN	sin;
+
+	if (!http_create_socket(&sock, &sin, ip))
+		return (NULL);
+	content = http_request(sock, convert, page);
+	closesocket(sock);
 	free(convert);
 	if (content == NULL)
 		return (NULL);
@@ -59,12 +69,10 @@ char	*ft_request(char *page)
 				if (tmp[i + 1] && tmp[i + 2] && tmp[i + 3] && tmp[i] == '-' && tmp[i + 1] == 'a' && tmp[i + 2] == 'p' && tmp[i + 3] == 'i')
 				{
 					tmp[i] = '\0';
-					printf("RESPONSE 1: %s\n", tmp);
 					return (tmp);
 				}
 				i++;
 			}
-			printf("RESPONSE 2: %s\n", tmp);
 			return (tmp);
 		}
 		i++;

