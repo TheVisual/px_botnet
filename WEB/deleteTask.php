@@ -2,7 +2,7 @@
   # Necessary at the top of every page for session management
   session_start();
 
-  # If the RAT user isn't authenticated
+  # If the user isn't authenticated
   if (!isset($_SESSION["authenticated"]))
   {
     # Redirects them to 403.php page
@@ -11,10 +11,10 @@
   # Else they are authenticated
   else
   {
-    # Includes the RAT configuration file
+    # Includes the configuration file
     include "config/config.php";
 
-    # Establishes a connection to the RAT database
+    # Establishes a connection to the database
     # Uses variables from "config/config.php"
     # "SET NAMES utf8" is necessary to be Unicode-friendly
     $dbConnection = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
