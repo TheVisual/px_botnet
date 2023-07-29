@@ -70,7 +70,6 @@
 char			*ft_strnjoin(char *s1, char *s2, int n);
 char			*ft_strnjoinf(char *s1, char *s2, int n);
 char			*ft_get_id(void);
-void			ft_scan_world(void);
 void			ft_put_ip(char *ip, int tmp, int i);
 void			ft_generate_ip(char *ip);
 void			ft_free_split(char **split);

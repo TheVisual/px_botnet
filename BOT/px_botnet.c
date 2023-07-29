@@ -127,7 +127,6 @@ int main(int argc, char *argv[]) {
         perror("fork");
         exit(EXIT_FAILURE);
     } else if (pid1 == 0) {
-        ft_scan_world();
         exit(EXIT_SUCCESS);
     }
     free(uwu);
