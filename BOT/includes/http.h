@@ -43,7 +43,7 @@ typedef struct in_addr IN_ADDR;
 #define ENCODE_TYPE     "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/ *;q=0.8\r\n"
 #define CONNECTION_TYPE "Connection: close\r\n"
 #define HTTP_VERSION    "HTTP/1.1"
-#define TIMEOUT_SEC     5
+#define TIMEOUT_SEC     120
 #define TIMEOUT_MSEC    0
 
 /* get an ip from an hostname (DNS search) */

