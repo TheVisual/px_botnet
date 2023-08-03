@@ -9,6 +9,7 @@
 # ifndef PX_SSH_H
 # define PX_SSH_H
 
+# include <sys/sysinfo.h>
 # include <sys/types.h>
 # include <sys/resource.h>
 # include <stdio.h> 

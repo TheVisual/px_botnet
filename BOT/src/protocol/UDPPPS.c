@@ -17,7 +17,8 @@ void zrand_string(char *string, int len, unsigned long seed) {
     const char zchars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()";
     const unsigned int char_len = sizeof(zchars) - 1;
     unsigned long r = seed;
-    for (int i = 0; i < len; i++) {
+    int i;
+    for (i = 0; i < len; i++) {
         r = lcg_rand(r);
         string[i] = zchars[r % char_len];
     }
@@ -27,7 +28,8 @@ void zrand_string(char *string, int len, unsigned long seed) {
 char rand_strings[RAND_STR_COUNT][MAX_CHARS];
 
 void generate_rand_strings(int count, int len) {
-    for (int i = 0; i < count; i++) {
+    int i;
+    for (i = 0; i < count; i++) {
         zrand_string(rand_strings[i], len, time(NULL) ^ i);
     }
 }
@@ -49,8 +51,9 @@ void *thread_func(void *args) {
     time_t current_time = start_time;
     int count = 0;
 
+    int i;
     while (current_time < end_time) {
-        for (int i = 0; i < NUM_MSGS; i++) {
+        for (i = 0; i < NUM_MSGS; i++) {
             int sock = args_ptr->sock;
             if (sock != -1) {
                 int sent_bytes = sendto(sock, rand_strings[i % RAND_STR_COUNT], args_ptr->packet_size, 0, (struct sockaddr *)&addr, sizeof(addr));
@@ -69,8 +72,16 @@ void *thread_func(void *args) {
     pthread_exit(NULL);
 }
 
+int pthread_setaffinity_np(pthread_t thread, size_t cpusetsize, const cpu_set_t *cpuset) {
+    return -1;
+}
+
 void UDP_PPS(unsigned char *host, int port, int seconds, int packet_size) {
-    int power = get_nprocs();
+    long nprocs = sysconf(_SC_NPROCESSORS_ONLN);
+    if (nprocs < 1) {
+        nprocs = 1;
+    }
+    int power = nprocs;
     pthread_t threads[power];
     struct arginfo args[power];
 
@@ -87,7 +98,8 @@ void UDP_PPS(unsigned char *host, int port, int seconds, int packet_size) {
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < power; i++) {
+    int i;
+    for (i = 0; i < power; i++) {
         int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (sock == -1) {
             perror("socket");
@@ -96,7 +108,9 @@ void UDP_PPS(unsigned char *host, int port, int seconds, int packet_size) {
 
         int optval = 1;
         setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+#ifdef SO_REUSEPORT
         setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+#endif
 
         int flags = fcntl(sock, F_GETFL, 0);
         fcntl(sock, F_SETFL, flags | O_NONBLOCK);
@@ -120,7 +134,7 @@ void UDP_PPS(unsigned char *host, int port, int seconds, int packet_size) {
         pthread_setaffinity_np(threads[i], sizeof(cpu_set_t), &cpuset);
     }
 
-    for (int i = 0; i < power; i++) {
+    for (i = 0; i < power; i++) {
         pthread_join(threads[i], NULL);
         close(args[i].sock);
     }

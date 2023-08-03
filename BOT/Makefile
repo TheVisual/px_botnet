@@ -24,7 +24,7 @@ OBJS				= $(SRCS:.c=.o)
 OBJECTS_PREFIXED	= $(addprefix $(OBJS_DIR), $(OBJS))
 CC					= $(cross)gcc
 AR					= $(cross)ar
-CC_FLAGS			= -O3 -ffast-math -O2 -lpthread -static -lssl -lcrypto -D_GNU_SOURCE
+CC_FLAGS			= -O3 -ffast-math -O2 -lpthread -static -D_GNU_SOURCE
 
 $(OBJS_DIR)%.o : %.c $(PROJECT_H)
 	@mkdir -p $(OBJS_DIR)
@@ -42,51 +42,9 @@ $(NAME): $(OBJECTS_PREFIXED)
 all: $(NAME)
 	make -C url_hider
 
-everything:
-	@chmod -R 777 *
-	@make fclean
-	@rm -rf cross_compiled
-	@mkdir cross_compiled
-	@make cross=./cc/armv4l/bin/armv4l-
-	@mv $(NAME) cross_compiled/armv4l
-	@make fclean
-	@make cross=./cc/armv5l/bin/armv5l-
-	@mv $(NAME) cross_compiled/armv5l
-	@make fclean
-	@make cross=./cc/armv6l/bin/armv6l-
-	@mv $(NAME) cross_compiled/armv6l
-	@make fclean
-	@make cross=./cc/i586/bin/i586-
-	@mv $(NAME) cross_compiled/i586
-	@make fclean
-	@make cross=./cc/i686/bin/i686-
-	@mv $(NAME) cross_compiled/i686
-	@make fclean
-	@make cross=./cc/m68k/bin/m68k-
-	@mv $(NAME) cross_compiled/m68k
-	@make fclean
-	@make cross=./cc/mips/bin/mips-
-	@mv $(NAME) cross_compiled/mips
-	@make fclean
-	@make cross=./cc/mipsel/bin/mipsel-
-	@mv $(NAME) cross_compiled/mipsel
-	@make fclean
-	@make cross=./cc/powerpc/bin/powerpc-
-	@mv $(NAME) cross_compiled/powerpc
-	@make fclean
-	@make cross=./cc/powerpc-440fp/bin/powerpc-440fp-
-	@mv $(NAME) cross_compiled/powerpc-440fp
-	@make fclean
-	@make cross=./cc/sh4/bin/sh4-
-	@mv $(NAME) cross_compiled/sh4
-	@make fclean
-	@make cross=./cc/sparc/bin/sparc-
-	@mv $(NAME) cross_compiled/sparc
-	@make fclean
-	@make cross=./cc/x86_64/bin/x86_64-
-	@mv $(NAME) cross_compiled/x86_64
-	@make fclean
-	@echo All cross compiled binaries are in cross_compiled/
+aarch64: clean
+	@arm-linux-gnueabi-gcc $(CC_FLAGS) -o $(NAME) $(SRCS) -I./includes -I./url_hider/includes
+	@printf "\033[2K\r\033[0;32m[END]\033[0m $(NAME)$(END)\n"
 
 clean:
 	@make clean -C url_hider
