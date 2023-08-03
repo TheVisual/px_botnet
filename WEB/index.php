@@ -187,7 +187,25 @@ else {
 
 											$botdeleted = $statement->rowCount();
 											?>
-											<div class="text-dark font-weight-bold h5 mb-0" name="botconnected" id="botconnected"><span><?php echo $bot, "/", $botdisconnected; ?></span></div>
+											<div class="text-dark font-weight-bold h5 mb-0" name="botconnected" id="botconnected"><span></span></div>
+
+											<script>
+											function updateBotConnected() {
+												// Send an AJAX request to fetch the updated value
+												var xhr = new XMLHttpRequest();
+												xhr.open('GET', 'get_bot_count.php', true);
+												xhr.onload = function() {
+												if (xhr.status === 200) {
+													// Update the HTML element with the new value
+													document.getElementById('botconnected').textContent = xhr.responseText;
+												}
+												};
+												xhr.send();
+											}
+
+											// Call the updateBotCount function every 1 second
+											setInterval(updateBotConnected, 1000);
+											</script>
 										</div>
 										<div class="col-auto">
 											<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" class="bi bi-cpu fa-2x text-gray-300">
@@ -202,33 +220,35 @@ else {
 							<div class="card shadow border-start-success py-2">
 								<div class="card-body">
 									<div class="row align-items-center no-gutters">
-										<div class="col me-2">
-											<div class="text-uppercase text-success fw-bold text-xs mb-1"><span>Uptime</span></div>
-											<div class="row no-gutters align-items-center">
-												<div class="col-auto">
-													<?php
-													$str   = @file_get_contents('/proc/uptime');
-													$num   = floatval($str);
-													$secs  = fmod($num, 60);
-													$num = intdiv($num, 60);
-													$mins  = $num % 60;
-													$num = intdiv($num, 60);
-													$hours = $num % 24;
-													$num = intdiv($num, 24);
-													$days  = $num;
-													?>
-
-													<div class="text-dark font-weight-bold h5 mb-0 mr-3"><span><strong><?php echo $days;
-																														echo ":";
-																														echo $hours;
-																														echo ":";
-																														echo $mins;
-																														echo ":";
-																														echo round($secs) ?></strong><br></span></div>
-												</div>
-											</div>
+									<div class="col me-2">
+									<div class="text-uppercase text-success fw-bold text-xs mb-1"><span>Uptime</span></div>
+									<div class="row no-gutters align-items-center">
+										<div class="col-auto">
+										<div class="text-dark font-weight-bold h5 mb-0 mr-3"><span id="uptime"><strong>Loading...</strong><br></span></div>
 										</div>
-										<div class="col-auto"><a href="world/"><i class="fas fa-globe-europe fa-2x text-gray-300"></i></a></div>
+									</div>
+									</div>
+									<script>
+									// Define a function to update the uptime
+									function updateUptime() {
+										// Send an AJAX request to fetch the uptime from the server
+										var xhr = new XMLHttpRequest();
+										xhr.onreadystatechange = function() {
+										if (this.readyState == 4 && this.status == 200) {
+											// Parse the response as JSON
+											var data = JSON.parse(this.responseText);
+											// Update the HTML element that displays the uptime
+											document.getElementById("uptime").innerHTML = "<strong>" + data.days + ":" + data.hours + ":" + data.mins + ":" + data.secs + "</strong><br>";
+										}
+										};
+										xhr.open("GET", "uptime.php", true);
+										xhr.send();
+									}
+
+									// Call the updateBotCount function every 1 second
+									setInterval(updateUptime, 1000);
+									</script>
+									<div class="col-auto"><a href="world/"><i class="fas fa-globe-europe fa-2x text-gray-300"></i></a></div>
 									</div>
 								</div>
 							</div>
@@ -236,35 +256,44 @@ else {
 						<div class="col-md-6 col-xl-4 col-xxl-4 mb-4">
 							<div class="card shadow border-start-info py-2">
 								<div class="card-body">
-									<div class="row align-items-center no-gutters">
-										<div class="col me-2">
-											<?php
-											$statement = $dbConnection->prepare("SELECT * FROM hosts where status = 'connected'");
-											$statement->execute();
-
-											$bot = $statement->rowCount();
-											$statement = $dbConnection->prepare("SELECT * FROM hosts");
-											$statement->execute();
-
-											$allbots = $statement->rowCount();
-											if ($allbots == 0)
-												$percentage = 0;
-											else
-												$percentage = round((($bot / $allbots) * 100), 0);
-											?>
-											<div class="text-uppercase text-info fw-bold text-xs mb-1"><span>Connected bot / Total bot</span></div>
-											<div class="row g-0 align-items-center">
-												<div class="col-auto">
-													<div class="text-dark fw-bold h5 mb-0 me-3"><span><?php echo $percentage . "%"; ?></span></div>
-												</div>
-												<div class="col">
-													<div class="progress progress-sm">
-														<div class="progress-bar" role="progressbar" style="width: <?php echo $percentage . "%"; ?>;" aria-valuenow="<?php echo $bot; ?>" aria-valuemin="0" aria-valuemax="<?php echo $allbots; ?>"></div>
-													</div>
-												</div>
+								<div class="row align-items-center no-gutters">
+									<div class="col me-2">
+									<div class="text-uppercase text-info fw-bold text-xs mb-1"><span>Connected bot / Total bot</span></div>
+										<div class="row g-0 align-items-center">
+										<div class="col-auto">
+											<div class="text-dark fw-bold h5 mb-0 me-3"><span id="bot-percentage"></span></div>
+										</div>
+										<div class="col">
+											<div class="progress progress-sm">
+											<div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
 											</div>
 										</div>
-										<div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div>
+										</div>
+									</div>
+									<script>
+										function updateBotCount() {
+											// Send an AJAX request to fetch the updated value
+											var xhr = new XMLHttpRequest();
+											xhr.open('GET', 'get_bot_count.php', true);
+											xhr.onload = function() {
+												if (xhr.status === 200) {
+													// Update the HTML elements with the new values
+													var response = xhr.responseText.split('/');
+													var connected = parseInt(response[0]);
+													var total = parseInt(response[1]);
+													var percentage = total == 0 ? 0 : Math.round((connected / total) * 100);
+													document.querySelector('#bot-percentage').textContent = connected + ' / ' + total;
+													document.querySelector('.progress-bar').style.width = percentage + '%';
+													document.querySelector('.progress-bar').setAttribute('aria-valuenow', connected);
+													document.querySelector('.progress-bar').setAttribute('aria-valuemax', total);
+												}
+											};
+											xhr.send();
+										}
+										// Call the updateBotCount function every 1 second
+										setInterval(updateBotCount, 1000);
+									</script>
+									<div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div>
 									</div>
 								</div>
 							</div>
@@ -283,88 +312,75 @@ else {
 									</div>
 								</div>
 								<div class="card-body" style="height: 460px;">
-									<div class="chart-area">
-										<?php
-										date_default_timezone_set('Asia/Kolkata');
-										function count_array_values($my_array, $match)
-										{
-											$count = 0;
-											$match = date('Y-m-d', strtotime($match));
+								<div class="chart-area">
+									<?php
+									date_default_timezone_set('Asia/Kolkata');
+									function count_array_values($my_array, $match)
+									{
+										$count = 0;
+										$match = date('Y-m-d', strtotime($match));
 
-											foreach ($my_array as $key => $value) {
-												$value = date('Y-m-d', strtotime($value['date-create']));
-												if ($value == $match) {
-													$count++;
-												}
+										foreach ($my_array as $value) {
+											$value = date('Y-m-d', strtotime($value['date-create']));
+											if ($value == $match) {
+												$count++;
 											}
-
-											return $count;
 										}
 
-										$d0 = date("Y-m-d H:i:s");
-										$d1 = date("Y-m-d H:i:s", strtotime("-1 days"));
-										$d2 = date("Y-m-d H:i:s", strtotime("-2 days"));
-										$d3 = date("Y-m-d H:i:s", strtotime("-3 days"));
-										$d4 = date("Y-m-d H:i:s", strtotime("-4 days"));
-										$d5 = date("Y-m-d H:i:s", strtotime("-5 days"));
-										$d6 = date("Y-m-d H:i:s", strtotime("-6 days"));
-										$statement = $dbConnection->prepare("SELECT `date-create` FROM hosts");
-										$statement->execute();
-										$results = $statement->fetchAll();
-										$d0 = count_array_values($results, $d0);
-										$d1 = count_array_values($results, $d1);
-										$d2 = count_array_values($results, $d2);
-										$d3 = count_array_values($results, $d3);
-										$d4 = count_array_values($results, $d4);
-										$d5 = count_array_values($results, $d5);
-										$d6 = count_array_values($results, $d6);
-										?>
-										<canvas id="botschart" style="width:100%"></canvas>
-										<script>
-											var ctxL = document.getElementById("botschart").getContext('2d');
-											var canvas = document.getElementById('botschart');
-											var heightRatio = 1.5;
-											canvas.height = canvas.width * heightRatio;
-											var botschart = new Chart(ctxL, {
-												type: 'line',
-												data: {
-													labels: ["<?php echo date("m/d", strtotime("-6 days")) ?>",
-														"<?php echo date("m/d", strtotime("-5 days")) ?>",
-														"<?php echo date("m/d", strtotime("-4 days")) ?>",
-														"<?php echo date("m/d", strtotime("-3 days")) ?>",
-														"<?php echo date("m/d", strtotime("-2 days")) ?>",
-														"<?php echo date("m/d", strtotime("-1 days")) ?>",
-														"<?php echo date("m/d") ?>"
+										return $count;
+									}
+
+									$days = [];
+									for ($i = 0; $i < 7; $i++) {
+										$days[] = date("Y-m-d H:i:s", strtotime("-{$i} days"));
+									}
+
+									$statement = $dbConnection->prepare("SELECT `date-create` FROM hosts");
+									$statement->execute();
+									$results = $statement->fetchAll();
+
+									$data = [];
+									foreach ($days as $day) {
+										$data[] = count_array_values($results, $day);
+									}
+
+									$labels = array_map(function ($day) {
+										return date("m/d", strtotime($day));
+									}, array_reverse($days));
+
+									?>
+									<canvas id="botschart" style="width:100%"></canvas>
+									<script>
+										var ctxL = document.getElementById("botschart").getContext('2d');
+										var canvas = document.getElementById('botschart');
+										var heightRatio = 1.5;
+										canvas.height = canvas.width * heightRatio;
+										var botschart = new Chart(ctxL, {
+											type: 'line',
+											data: {
+												labels: <?php echo json_encode($labels) ?>,
+												datasets: [{
+													label: "Latest week new bots",
+													data: <?php echo json_encode($data) ?>,
+													backgroundColor: [
+														'rgba(0, 137, 132, .2)',
 													],
-													datasets: [{
-														label: "Latest week new bots",
-														data: [<?php echo $d6 ?>,
-															<?php echo $d5 ?>,
-															<?php echo $d4 ?>,
-															<?php echo $d3 ?>,
-															<?php echo $d2 ?>,
-															<?php echo $d1 ?>,
-															<?php echo $d0 ?>
-														],
-														backgroundColor: [
-															'rgba(0, 137, 132, .2)',
-														],
-														borderColor: [
-															'rgba(0, 10, 130, .7)',
-														],
-														borderWidth: 2
-													}]
-												},
-												options: {
-													responsive: true,
-													legend: {
-														display: false,
-													}
+													borderColor: [
+														'rgba(0, 10, 130, .7)',
+													],
+													borderWidth: 2
+												}]
+											},
+											options: {
+												responsive: true,
+												legend: {
+													display: false,
 												}
-											});
-										</script>
-									</div>
+											}
+										});
+									</script>
 								</div>
+							</div>
 							</div>
 						</div>
 						<div class="col-lg-5 col-xl-4">

@@ -107,6 +107,7 @@ else {
                                     $botoffline = $statement->rowCount();
                                     ?>
                                     <p id="botconnected">Connected: <?php echo $bot, "/", $botoffline; ?></p>
+                                    <a type="submit" class="btn btn-danger" href="deleteDeadBots.php">Delete Dead Bots</a>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter"><label><input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search" name="search_input" id="search_input" onkeyup="fulkter()"></label></div>
